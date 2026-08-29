@@ -20,7 +20,6 @@ REQUIREMENTS
 
 CONFIGURATION
   Edit config.h before building to customize keybindings and behavior.
-  Copy from config.def.h: make config.h
 
 USAGE
   Start from .xinitrc or display manager
