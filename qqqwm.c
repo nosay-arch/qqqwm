@@ -9,7 +9,7 @@
 #include <signal.h>
 #include <unistd.h>
 
-#include "nullwm.h"
+#include "qqqwm.h"
 
 static client *client_list = {0}, *workspace_clients[10] = {0}, *current_client;
 
