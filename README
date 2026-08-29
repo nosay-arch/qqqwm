@@ -1,0 +1,26 @@
+nullwm - null window manager
+
+DESCRIPTION
+  Lightweight window manager for X11 with multi-workspace support.
+  Written in C with minimal dependencies and macro-based design.
+
+FEATURES
+  - Keyboard and mouse control
+  - Window focus and management
+  - Configurable keybindings via config.h
+
+BUILD
+  make
+  make install PREFIX=/usr
+
+REQUIREMENTS
+  - X11 development libraries (libx11-dev)
+  - GCC compiler
+  - POSIX environment
+
+CONFIGURATION
+  Edit config.h before building to customize keybindings and behavior.
+  Copy from config.def.h: make config.h
+
+USAGE
+  Start from .xinitrc or display manager
