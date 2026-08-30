@@ -5,13 +5,13 @@
 #include <X11/cursorfont.h>
 
 #include <stdlib.h>
-
 #include <signal.h>
 #include <unistd.h>
 
 #include "qqqwm.h"
+#include "config.h"
 
-static client *client_list = {0}, *workspace_clients[10] = {0}, *current_client;
+static client *client_list = {0}, *workspace_clients[NUMBER_OF_WS] = {0}, *current_client;
 
 static int          window_x,     window_y,      num_lock_mask = 0;
 static int          screen_width, screen_height, current_workspace = 1;
@@ -34,8 +34,6 @@ static void (*events[LASTEvent])(XEvent *e) = {
     [MotionNotify]         =notify_motion,
 };
 
-#include "config.h"
-
 void win_focus(client *c) {
     if (!c) {
         current_client = 0;
@@ -46,16 +44,16 @@ void win_focus(client *c) {
     XSetInputFocus(display, current_client->w, RevertToParent, CurrentTime);
 }
 
-void notify_destroy(XEvent *e) {
-    win_del(e->xdestroywindow.window);
-
-    if (client_list) win_focus(client_list->prev);
-}
-
 void notify_enter(XEvent *e) {
     while(XCheckTypedEvent(display, EnterNotify, e));
 
     for win if (client_item->w == e->xcrossing.window) win_focus(client_item);
+}
+
+void notify_destroy(XEvent *e) {
+    win_del(e->xdestroywindow.window);
+
+    if (client_list) win_focus(client_list->prev);
 }
 
 void notify_motion(XEvent *e) {
@@ -97,9 +95,7 @@ void button_release(XEvent *e) {
 void win_add(Window w) {
     client *new_client;
 
-    if (!(new_client = (client *) calloc(1, sizeof(client))))
-        exit(1);
-
+    if (!(new_client = (client *) calloc(1, sizeof(client)))) exit(1);
     new_client->w = w;
 
     if (client_list) {
@@ -258,17 +254,13 @@ void run(const Arg arg) {
 
 void input_grab(Window grab_window) {
 
-    unsigned int i, j, modifiers[] = {
-        0, LockMask, num_lock_mask, num_lock_mask|LockMask
-    };
+    unsigned int i, j, modifiers[] = {0, LockMask, num_lock_mask, num_lock_mask|LockMask};
 
     XModifierKeymap *modifier_map = XGetModifierMapping(display);
     KeyCode code;
 
     for (i = 0; i < 8; i++)
-
         for (int modifier_index = 0; modifier_index < modifier_map->max_keypermod; modifier_index++)
-
             if (modifier_map->modifiermap[i * modifier_map->max_keypermod + modifier_index] == XKeysymToKeycode(display, 0xff7f))
                 num_lock_mask = (1 << i);
 
@@ -281,7 +273,8 @@ void input_grab(Window grab_window) {
 
     for (i = 1; i < 4; i += 2)
         for (j = 0; j < sizeof(modifiers)/sizeof(*modifiers); j++)
-            XGrabButton(display, i, MOD | modifiers[j], grab_window, True, ButtonPressMask|ButtonReleaseMask|PointerMotionMask, GrabModeAsync, GrabModeAsync, 0, 0);
+            XGrabButton(display, i, MOD | modifiers[j], grab_window, True, ButtonPressMask|ButtonReleaseMask|PointerMotionMask,
+                GrabModeAsync, GrabModeAsync, 0, 0);
 
     XFreeModifiermap(modifier_map);
 }
